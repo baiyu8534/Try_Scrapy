@@ -76,13 +76,15 @@ class JdebookSpiderSpider(scrapy.Spider):
                 meta={"item": deepcopy(item)}
             )
         # print(item)
-        next_url = "https://list.jd.com" + response.xpath('//a[@class="pn-next"]/@href').extract_first()
-        # print(next_url)
-        yield scrapy.Request(
-            next_url,
-            callback=self.parse_list_page,
-            meta={"item": item}
-        )
+        next_url = response.xpath('//a[@class="pn-next"]/@href').extract_first()
+        if next_url is not None:
+            next_url = "https://list.jd.com" + next_url
+            # print(next_url)
+            yield scrapy.Request(
+                next_url,
+                callback=self.parse_list_page,
+                meta={"item": item}
+            )
 
     def parse_book_info_page(self, response):
         item = response.meta["item"]
